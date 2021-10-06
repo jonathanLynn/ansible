@@ -1,0 +1,82 @@
+---
+
+- name: Create a VIP, pool and pool members
+  hosts: all
+  connection: local
+
+  vars:
+    provider:
+      password: admin
+      server: 192.168.1.55
+      user: admin
+      validate_certs: no
+      server_port: 443
+
+    # Below are the various Variables you simply need to fill out.
+    # Pool Members
+    poolMember1IP: 10.100.1.7
+    poolMember1Port: 443
+    poolMember1Name: Server7
+    poolMember2IP: 10.100.1.8
+    poolMember2Port: 443
+    poolMember2Name: Server8
+
+    # Pool Details
+    poolName: pool-ansible-4
+
+    # Virtual Server  
+    vipName: vs-ansible-4
+    vipDestinationIP: 172.16.10.124
+
+    # Client Side SSL Profile 
+    clientSSLProfileName: ssl-ansible-4
+
+  tasks:
+
+    - name: Create a client SSL profile with a cert/key/chain setting
+      bigip_profile_client_ssl:
+        provider: "{{ provider }}"
+        name: "{{ clientSSLProfileName }}"
+        cert_key_chain:
+        - cert: bigip_ssl_cert1
+          key: bigip_ssl_cert1
+      delegate_to: localhost
+          
+    - name: Create a pool
+      bigip_pool:
+        provider: "{{ provider }}"
+        partition: Common
+        lb_method: ratio-member
+        name: "{{ poolName }}"
+        slow_ramp_time: 120
+      delegate_to: localhost
+
+    - name: Add members to pool
+      bigip_pool_member:
+        provider: "{{ provider }}"
+        description: "webserver {{ item.name }}"
+        host: "{{ item.host }}"
+        name: "{{ item.name }}"
+        pool: "{{ poolName  }}"
+        port: "{{ item.port }}"
+      with_items:
+        - host: "{{ poolMember1IP }}"
+          port: "{{ poolMember1Port }}"
+          name: "{{ poolMember1Name }}"
+        - host: "{{ poolMember2IP }}"
+          port: "{{ poolMember2Port }}"
+          name: "{{ poolMember2Name }}"
+      delegate_to: localhost
+
+    - name: Create a VIP
+      bigip_virtual_server:
+        provider: "{{ provider }}"
+        description: test
+        destination: "{{ vipDestinationIP }}"
+        name: "{{ vipName }}"
+        pool: "{{ poolName }}"
+        port: 443
+        snat: Automap
+        profiles:
+          - http
+      delegate_to: localhost
