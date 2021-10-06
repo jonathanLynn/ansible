@@ -1,0 +1,46 @@
+---
+
+- name: Attach a Client SSL Profile to a Virtual Server and a Health Monitor to a Pool
+  hosts: all
+  connection: local
+
+  vars:
+    provider:
+      password: admin
+      server: 192.168.1.55
+      user: admin
+      validate_certs: no
+      server_port: 443
+
+    # Below are the various Variables you simply need to fill out.
+    # Pool
+    poolName: pool-ansible-4
+
+    # Virtual Server  
+    vipName: vs-ansible-4
+    vipPartition: Common
+
+    # Client Side SSL Profile 
+    clientSSLProfileName: ssl-ansible-4
+
+  tasks:
+
+    - name: Add Client SSL Profile to VIP
+      bigip_virtual_server:
+        provider: "{{ provider }}"
+        name: "{{ vipName }}"
+        partition: "{{ vipPartition }}"
+        profiles:
+          - name: "{{ clientSSLProfileName }}"
+            context: client-side
+      delegate_to: localhost
+
+    - name: Attach a Health Monitor to a Pool
+      bigip_pool:
+        provider: "{{ provider }}"
+        state: present
+        name: "{{ poolName }}"
+        partition: "{{ vipPartition }}"
+        monitors:
+          - http
+      delegate_to: localhost
