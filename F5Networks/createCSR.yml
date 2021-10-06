@@ -1,0 +1,28 @@
+---
+
+- name: Create a CSR
+  hosts: all
+  connection: local
+
+  vars:
+    provider:
+      password: admin
+      server: 192.168.1.55
+      user: admin
+      validate_certs: no
+      server_port: 443
+
+  tasks:
+    - name: Create a CSR
+      bigip_command:
+        provider: "{{ provider }}"
+        commands: create /sys crypto key test-cert-with-ansible6 gen-certificate gen-csr common-name "Example Inc." organization "company" country "AU" email-address "test@test.com" state "Queensland" city "Brisbane" key-type rsa-private key-size 2048 secu
+rity-type normal subject-alternative-name "DNS:www.exchange.example.com, DNS:www.example.com, IP:203.0.113.100" ou "Technology"
+      register: result
+      delegate_to: localhost
+ 
+
+    - name: save output to local directory
+      copy:
+       content: "{{ result.stdout | replace('\\n', '\n') }}"           
+       dest: "F5output/test-cert-with-ansible6.csr"
