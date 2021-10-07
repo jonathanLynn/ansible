@@ -1,0 +1,42 @@
+---
+- name: Create VLAN + Sub-Interfaces + Routing
+
+  hosts: routers
+  gather_facts: False
+  ignore_errors: yes
+
+  tasks:
+
+    - name: Create new Sub-Interfaces
+      ios_interfaces:
+        config:
+        - name: ethernet0/0.300
+
+    - name: Add VLAN to Sub-Interface ethernet0/0.300
+      ios_command:
+        commands:
+        - config t
+        - interface ethernet 0/0.300
+        - encapsulation dot1q 300
+
+    - name: Add L3 address to Sub Interface
+      ios_l3_interfaces:
+        config:
+        - name: ethernet 0/0.300
+          ipv4:
+          - address: 100.100.100.100/24
+        state: merged          
+
+    - name: Save Running-Config to Startup-Config - ROUTERS
+      ios_config:
+        save_when: modified
+
+    - name: Verify Change
+      ios_command:
+        commands:
+        - show ip int brief
+        - show interface ethernet 0/0.300
+      register: showcommands
+
+    - debug: 
+        var: showcommands.stdout_lines
