@@ -1,0 +1,12 @@
+---
+- name: Add New Entry to ACL
+  hosts: routers
+
+  tasks:
+
+   - name: Adding new Entry to ACL
+     ios_config:
+       lines:
+         - permit ip host 100.100.100.100 any log
+       parents: ip access-list extended test
+       match: exact
