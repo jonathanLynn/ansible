@@ -1,0 +1,12 @@
+---
+- hosts: routers
+  gather_facts: false
+
+  tasks:
+   - name: Check Banner Config and Enforce the Standard. 
+     ios_banner:
+       banner: login
+       text: |
+         This is the Standard Login Banner.
+         This has been enforced by Ansible
+       state: present
