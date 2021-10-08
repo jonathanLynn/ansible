@@ -1,0 +1,11 @@
+---
+- hosts: routers
+  gather_facts: false
+
+  tasks:
+   - name: Enforce NTP Configuration
+     ios_ntp:
+       server: 10.10.10.3
+       source_int: Loopback0
+       logging: true
+       state: present
