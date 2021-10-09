@@ -1,0 +1,14 @@
+---
+- name: Create New ACL
+  hosts: routers
+
+  tasks:
+
+    - name: Create Access List 'Testing'
+      ios_config:
+        lines:
+          - 10 permit ip host 172.16.1.100 any log
+          - 20 permit ip host 172.16.2.100 any log
+        parents: ip access-list extended testing
+        before: no ip access-list extended testing
+        match: exact
