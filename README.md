@@ -7,4 +7,4 @@ This repository has the below playbooks:
 | Vendor               | Description |
 | -------------------- | ----------- |
 | F5Networks           | CreateCSR / Create LTM Virtual Server/Pools/Nodes |
-| Cisco                | NTP, Login Banners, L3 Interfaces                 |
+| Cisco                | NTP, Login Banners, L3 Interfaces, SNMP and more  |
