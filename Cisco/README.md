@@ -7,3 +7,4 @@
   - ios_version_checks.yml - Generate a report against all your ios devices to verify if ugrades are required
   - login_banner.yml - Enforce a standard Login Banner Configuration
   - ntp.yml - Enforce a standard NTP configuration
+  - snmp.yml - Enforces a standard SNMP configuration
