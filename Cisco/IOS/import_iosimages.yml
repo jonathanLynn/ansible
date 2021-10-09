@@ -1,0 +1,14 @@
+---
+- name: Import new IOS Image into Flash:
+  hosts: routers
+
+  gather_facts: false
+
+  tasks:
+
+  - name: Upload iOS image
+    net_put:
+      src: "~/test.txt"
+      dest: "flash::test.txt"
+    vars:
+      ansible_command_timeout: 600
