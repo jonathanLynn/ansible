@@ -1,0 +1,13 @@
+---
+- name: show version
+  hosts: routers
+
+  gather_facts: False
+  ignore_errors: yes
+
+  tasks:
+    - name: show version
+      ios_command:
+        commands: show version
+      register: output
+    - debug: var=output
