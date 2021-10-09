@@ -1,0 +1,19 @@
+---
+- name: Enforce NTP and Timezone Configuration
+  hosts: all
+  connection: local
+
+  vars:
+    provider:
+      password: admin
+      server: 192.168.1.55
+      user: admin
+      validate_certs: no
+      server_port: 443
+
+  tasks:
+    - name: Set NTP Server
+      bigip_device_ntp:
+        ntp_servers: 10.10.10.1
+        provider: "{{ provider }}"
+      delegate_to: localhost
